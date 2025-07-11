@@ -107,7 +107,7 @@ resource "aws_instance" "web" {
 
 # 9. Create an S3 bucket
 resource "aws_s3_bucket" "my_bucket" {
-  bucket = "my_bucket1234098765"  # Change to a globally unique bucket name
+  bucket = "my_bucket1234"  # Change to a globally unique bucket name
   acl    = "private"
 
   tags = {
