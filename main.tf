@@ -107,14 +107,12 @@ resource "aws_instance" "web" {
 
 # 9. Create an S3 bucket
 resource "aws_s3_bucket" "my_bucket" {
-  bucket = "my_bucket1234"  # Change to a globally unique bucket name
-  acl    = "private"
-
-  tags = {
-    Name        = "MyS3Bucket"
-    Environment = "Production"
-  }
+  bucket = "bucket1234098765"
+  # Do NOT set acl here
 }
+
+# Do NOT include this:
+# resource "aws_s3_bucket_acl" "my_bucket_acl" { ... }
 
 # 10. Output useful information
 output "ec2_public_ip" {
