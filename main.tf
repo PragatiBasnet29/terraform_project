@@ -105,19 +105,6 @@ resource "aws_instance" "web" {
   }
 }
 
-# 8b. Create a second EC2 instance in the public subnet
-resource "aws_instance" "web2" {
-  ami                    = "ami-0c02fb55956c7d316"  # Amazon Linux 2 AMI in us-east-1 (update for your region)
-  instance_type          = "t2.micro"
-  subnet_id              = aws_subnet.public.id
-  vpc_security_group_ids = [aws_security_group.ec2_sg.id]
-  associate_public_ip_address = true
-
-  tags = {
-    Name = "MyEC2Instance2"
-  }
-}
-
 # 9. Create an S3 bucket
 resource "aws_s3_bucket" "my_bucket" {
   bucket = "bucket1234098765"
