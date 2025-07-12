@@ -1,5 +1,3 @@
-# main.tf
-
 provider "aws" {
   region = "us-east-1" 
 }
@@ -137,3 +135,4 @@ output "s3_bucket_name" {
   description = "Name of the S3 bucket"
   value       = aws_s3_bucket.my_bucket.bucket
 }
+ 
