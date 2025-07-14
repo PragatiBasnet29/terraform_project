@@ -1,5 +1,7 @@
+# main.tf
+
 provider "aws" {
-  region = "us-east-1" 
+  region = "us-east-1"  # Change to your preferred region
 }
 
 # 1. Create a VPC
@@ -100,25 +102,72 @@ resource "aws_security_group" "ec2_sg" {
 
 # 8. Create an EC2 instance in the public subnet
 resource "aws_instance" "web" {
-  ami                    = "ami-0c02fb55956c7d316" 
+  ami                    = "ami-0c02fb55956c7d316"  # Amazon Linux 2 AMI in us-east-1 (update for your region)
   instance_type          = "t2.micro"
   subnet_id              = aws_subnet.public.id
   vpc_security_group_ids = [aws_security_group.ec2_sg.id]
   associate_public_ip_address = true
+  iam_instance_profile   = aws_iam_instance_profile.ec2_s3_profile.name
 
   tags = {
     Name = "MyEC2Instance"
   }
 }
 
-# 9. Create an S3 bucket
+# 9. Create an S3 buckets
 resource "aws_s3_bucket" "my_bucket" {
   bucket = "bucket1234098765"
   # Do NOT set acl here
 }
 
-# Do NOT include this:
-# resource "aws_s3_bucket_acl" "my_bucket_acl" { ... }
+
+# 9.1 IAM Policy granting S3 upload permission to a specific bucket
+resource "aws_iam_policy" "ec2_s3_upload" {
+  name        = "EC2S3UploadPolicy"
+  description = "Allow EC2 to upload files to S3 bucket"
+  policy      = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:PutObject",
+          "s3:GetObject"
+        ]
+        Resource = "arn:aws:s3:::${aws_s3_bucket.my_bucket.bucket}/*"
+      }
+    ]
+  })
+}
+
+# 9.2 IAM Role for EC2
+resource "aws_iam_role" "ec2_s3_role" {
+  name = "EC2S3UploadRole"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+# 9.3 Attach the policy to the role
+resource "aws_iam_role_policy_attachment" "ec2_s3_attach" {
+  role       = aws_iam_role.ec2_s3_role.name
+  policy_arn = aws_iam_policy.ec2_s3_upload.arn
+}
+
+# 9.4 IAM Instance Profile
+resource "aws_iam_instance_profile" "ec2_s3_profile" {
+  name = "EC2S3InstanceProfile"
+  role = aws_iam_role.ec2_s3_role.name
+}
 
 # 10. Output useful information
 output "ec2_public_ip" {
@@ -135,4 +184,3 @@ output "s3_bucket_name" {
   description = "Name of the S3 bucket"
   value       = aws_s3_bucket.my_bucket.bucket
 }
- 
