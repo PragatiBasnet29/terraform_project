@@ -1,7 +1,7 @@
- # main.tf
+# main.tf
 
 provider "aws" {
-  region = "us-east-1"  # Change to your preferred region
+  region = "us-east-1"
 }
 
 # 1. Create a VPC
@@ -102,7 +102,7 @@ resource "aws_security_group" "ec2_sg" {
 
 # 8. Create an EC2 instance in the public subnet
 resource "aws_instance" "web" {
-  ami                    = "ami-0c02fb55956c7d316"  # Amazon Linux 2 AMI in us-east-1 (update for your region)
+  ami                    = "ami-0c02fb55956c7d316"  
   instance_type          = "t2.micro"
   subnet_id              = aws_subnet.public.id
   vpc_security_group_ids = [aws_security_group.ec2_sg.id]
@@ -117,7 +117,6 @@ resource "aws_instance" "web" {
 # 9. Create an S3 buckets
 resource "aws_s3_bucket" "my_bucket" {
   bucket = "bucket1234098765"
-  # Do NOT set acl here
 }
 
 
@@ -134,7 +133,7 @@ resource "aws_iam_policy" "ec2_s3_upload" {
           "s3:PutObject",
           "s3:GetObject"
         ]
-        Resource = "arn:aws:s3:::${aws_s3_bucket.my_bucket.bucket}/*"
+        Resource = "arn:aws:s3:::bucket1234098765/*"
       }
     ]
   })
