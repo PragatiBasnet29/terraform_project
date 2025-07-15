@@ -61,4 +61,4 @@ terraform destroy
 
 ---
 
-**Author:** Your Name
+**Author:** Pragati Basnet
