@@ -7,7 +7,7 @@ on:
   # Trigger the workflow on pull requests that change any .tf file
   pull_request:
     paths:
-      - '**.tf'
+      - '**/*.tf'
 
 jobs:
   terraform-fmt:
